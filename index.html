@@ -10,17 +10,15 @@
 
 <div class="container">
     
-    <!-- EKRAN STARTOWY -->
     <div class="start-screen" id="start-screen">
-        <h1>Quiz </h1>
-        <p class="subtitle">brakuje</p>
+        <h1> Quiz </h1>
+        <p class="subtitle">brakuje czegoś?</p>
         
-        <button class="mode-btn single" onclick="startQuiz('one')">Szybki strzał (1 losowe pytanie)</button>
+        <button class="mode-btn single" onclick="startQuiz('one')">Szybki strzał w głowę :) (1 losowe pytanie)</button>
         <button class="mode-btn" onclick="startQuiz('ten')">Losowe 10 pytań</button>
-        <button class="mode-btn secondary" onclick="startQuiz('all')">Wszystkie pytania</button>
+        <button class="mode-btn secondary" onclick="startQuiz('all')">Wszystkie pytania (Losowo)</button>
     </div>
 
-    <!-- EKRAN QUIZU -->
     <div class="quiz-screen" id="quiz-screen">
         <div class="progress-bar">
             <div class="progress-fill" id="progress-fill"></div>
@@ -32,12 +30,10 @@
             Treść pytania...
         </div>
         <div class="options-container" id="options-container">
-            <!-- Przyciski odpowiedzi -->
         </div>
         <button class="next-btn" id="next-btn" onclick="nextQuestion()">Następne pytanie ➜</button>
     </div>
 
-    <!-- EKRAN WYNIKÓW -->
     <div class="result-screen" id="result-screen">
         <h2>Koniec Quizu!</h2>
         <p>Twój wynik to:</p>
@@ -49,7 +45,6 @@
 </div>
 
 <script>
-    // Baza pytań
     const allQuestions = [
         {
             question: "Co charakteryzuje tzw. „państwo upadłe”?",
@@ -175,7 +170,7 @@
             question: "Co oznacza pojęcie „suwerenność państwa”?",
             options: ["Zależność od decyzji innego mocarstwa", "Zdolność do samodzielnego sprawowania władzy nad terytorium i ludnością", "Konieczność posiadania dostępu do morza", "Brak możliwości posiadania armii", "Obowiązek należenia do NATO"],
             correct: 1
-        }        ,
+        },
         {
             question: "Czym zajmuje się Światowa Organizacja Zdrowia (WHO)?",
             options: ["Koordynacją ochrony zdrowia publicznego na świecie", "Organizowaniem igrzysk olimpijskich", "Handlem bronią między państwami", "Ustalaniem kursów walut", "Ochroną zabytków kultury"],
@@ -324,8 +319,8 @@
         {
             question: "Kto wybiera Przewodniczącego Komisji Europejskiej?",
             options: ["Parlament Europejski na wniosek Rady Europejskiej", "Prezydent USA", "Obywatele w bezpośrednim głosowaniu internetowym", "Królowa Danii", "Losowanie totolotka"],
-            correct: 0 }
-            ,
+            correct: 0
+        },
         {
             question: "Kto jest obecnym Stałym Przedstawicielem Polski przy NATO (stan na 2024)?",
             options: ["Jacek Najder", "Tomasz Szatkowski", "Radosław Sikorski", "Marek Magierowski", "Adam Szlapka"],
@@ -376,7 +371,6 @@
             options: ["W Nowym Jorku", "W San Francisco", "W Los Angeles", "W Chicago", "W Miami"],
             correct: 0
         }
-        
     ];
 
     let currentQuestions = [];
@@ -405,16 +399,16 @@
 
     // Start quizu
     function startQuiz(mode) {
+        // ZAWSZE tasujemy wszystkie pytania na początku
         let shuffled = shuffleArray([...allQuestions]);
 
         if (mode === 'one') {
-            // Tylko 1 pytanie
             currentQuestions = shuffled.slice(0, 1);
         } else if (mode === 'ten') {
-            // 10 pytań
             currentQuestions = shuffled.slice(0, 10);
         } else {
-            currentQuestions = [...allQuestions];
+            // TUTAJ ZMIANA: Przypisujemy potasowaną tablicę, a nie oryginał
+            currentQuestions = shuffled;
         }
 
         currentQuestionIndex = 0;
@@ -427,14 +421,11 @@
         loadQuestion();
     }
 
-    // Ładowanie pytania
     function loadQuestion() {
         const q = currentQuestions[currentQuestionIndex];
         
-        // Reset widoku
         nextBtn.style.display = 'none';
         
-        // Ustawienie tekstu na przycisku (jeśli to ostatnie pytanie)
         if (currentQuestionIndex === currentQuestions.length - 1) {
             nextBtn.textContent = "Zakończ i pokaż wynik 🏁";
         } else {
@@ -492,7 +483,7 @@
         }
     }
 
-    // Pokaż wyniki
+
     function showResults() {
         quizScreen.style.display = 'none';
         resultScreen.style.display = 'block';
