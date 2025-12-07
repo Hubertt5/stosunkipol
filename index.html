@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Stosunki Polityczne i Międzynarodowe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- EKRAN STARTOWY -->
+    <div class="start-screen" id="start-screen">
+        <h1>Quiz </h1>
+        <p class="subtitle">brakuje</p>
+        
+        <button class="mode-btn single" onclick="startQuiz('one')">Szybki strzał (1 losowe pytanie)</button>
+        <button class="mode-btn" onclick="startQuiz('ten')">Losowe 10 pytań</button>
+        <button class="mode-btn secondary" onclick="startQuiz('all')">Wszystkie pytania</button>
+    </div>
+
+    <!-- EKRAN QUIZU -->
+    <div class="quiz-screen" id="quiz-screen">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="question-header">
+            <span id="question-counter">Pytanie 1/10</span>
+        </div>
+        <div class="question-text" id="question-text">
+            Treść pytania...
+        </div>
+        <div class="options-container" id="options-container">
+            <!-- Przyciski odpowiedzi -->
+        </div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Następne pytanie ➜</button>
+    </div>
+
+    <!-- EKRAN WYNIKÓW -->
+    <div class="result-screen" id="result-screen">
+        <h2>Koniec Quizu!</h2>
+        <p>Twój wynik to:</p>
+        <div class="score-display" id="final-score">0 / 0</div>
+        <p id="result-message"></p>
+        <button class="restart-btn" onclick="location.reload()">Zagraj jeszcze raz</button>
+    </div>
+
+</div>
+
+<script>
+    // Baza pytań
+    const allQuestions = [
+        {
+            question: "Co charakteryzuje tzw. „państwo upadłe”?",
+            options: ["Rozpad struktur państwowych i brak władzy centralnej", "Nadmiernie rozbudowana biurokracja", "Bardzo silna armia i policja kontrolująca obywateli", "Przynależność do zbyt wielu organizacji międzynarodowych", "Wysoki wskaźnik eksportu przy niskim imporcie"],
+            correct: 0
+        },
+        {
+            question: "Które z poniższych państw jest klasycznym przykładem państwa upadłego?",
+            options: ["Szwajcaria", "Somalia", "Japonia", "Norwegia", "Kanada"],
+            correct: 1
+        },
+        {
+            question: "Czym charakteryzuje się „państwo dysfunkcyjne”?",
+            options: ["Jest to państwo, które nie posiada dostępu do morza", "Jest to państwo, w którym nie działa jeden z kluczowych elementów, mimo istnienia władzy", "Jest to państwo, które zostało podbite przez sąsiada", "Jest to państwo o ustroju monarchicznym", "Jest to państwo, które nie posiada własnej waluty"],
+            correct: 1
+        },
+        {
+            question: "Który z poniższych krajów można uznać za przykład państwa dysfunkcyjnego?",
+            options: ["Wenezuela", "Niemcy", "Australia", "Finlandia", "Portugalia"],
+            correct: 0
+        },
+        {
+            question: "Jaka sytuacja polityczna jest kojarzona z Syrią lub Libią w ostatnich latach?",
+            options: ["Stabilny wzrost gospodarczy", "Wojna domowa", "Przystąpienie do Unii Europejskiej", "Pokojowa zmiana ustroju", "Organizacja Igrzysk Olimpijskich"],
+            correct: 1
+        },
+        {
+            question: "Czym zajmują się agencje takie jak Moody’s, S&P czy Fitch?",
+            options: ["Organizacją pomocy humanitarnej", "Oceną wiarygodności kredytowej (ratingiem)", "Wysyłaniem misji pokojowych na wojnę", "Ochroną środowiska naturalnego", "Ściganiem przestępców wojennych"],
+            correct: 1
+        },
+        {
+            question: "Kiedy Polska wstąpiła do NATO?",
+            options: ["12 marca 1999 roku", "1 maja 2004 roku", "4 czerwca 1989 roku", "11 września 2001 roku", "24 lutego 2022 roku"],
+            correct: 0
+        },
+        {
+            question: "Kiedy Polska stała się członkiem Unii Europejskiej?",
+            options: ["1 stycznia 1999 roku", "1 maja 2004 roku", "11 listopada 1918 roku", "13 grudnia 1981 roku", "1 lipca 2012 roku"],
+            correct: 1
+        },
+        {
+            question: "W którym roku powstała Organizacja Narodów Zjednoczonych (ONZ)?",
+            options: ["1918", "1939", "1945", "1960", "1989"],
+            correct: 2
+        },
+        {
+            question: "Gdzie znajduje się główna siedziba Kwatery Głównej NATO?",
+            options: ["W Waszyngtonie", "W Brukseli", "W Berlinie", "W Paryżu", "W Londynie"],
+            correct: 1
+        },
+        {
+            question: "Jak nazywa się obecny Sekretarz Generalny ONZ?",
+            options: ["Jens Stoltenberg", "António Guterres", "Donald Trump", "Ursula von der Leyen", "Joe Biden"],
+            correct: 1
+        },
+        {
+            question: "Ile państw członkowskich liczyła UE w momencie przystąpienia Polski (po rozszerzeniu w 2004)?",
+            options: ["6", "12", "15", "25", "50"],
+            correct: 3
+        },
+        {
+            question: "Co oznacza skrót OBWE?",
+            options: ["Organizacja Bezpieczeństwa i Współpracy w Europie", "Ogólnopolska Baza Wiedzy Ekonomicznej", "Organizacja Bojowa Wschód-Europa", "Obszar Bezpiecznego Wymiaru Europejskiego", "Ochrona Bardzo Ważnych Elementów"],
+            correct: 0
+        },
+        {
+            question: "Artykuł 5 Traktatu Północnoatlantyckiego (NATO) mówi o:",
+            options: ["Wspólnej walucie", "Zasadzie kolektywnej obrony (atak na jednego to atak na wszystkich)", "Wolnym handlu bez ceł", "Ochronie praw autorskich", "Zakazie posiadania broni nuklearnej"],
+            correct: 1
+        },
+        {
+            question: "Które miasto jest główną siedzibą ONZ?",
+            options: ["Genewa", "Nowy Jork", "Wiedeń", "Rzym", "Haga"],
+            correct: 1
+        },
+        {
+            question: "Czym jest strefa Schengen?",
+            options: ["Obszarem, gdzie obowiązuje waluta Euro", "Obszarem bez kontroli na granicach wewnętrznych", "Strefą wolnego handlu z USA", "Obszarem objętym działaniami wojennymi", "Strefą wyłącznego rybołówstwa"],
+            correct: 1
+        },
+        {
+            question: "Czy Polska jest członkiem strefy Euro?",
+            options: ["Tak, od 2004 roku", "Tak, od 2012 roku", "Nie, Polska posiada własną walutę", "Tak, ale tylko w transakcjach międzynarodowych", "Nie, ponieważ została wyrzucona ze strefy"],
+            correct: 2
+        },
+        {
+            question: "Kto jest obecnym przewodniczącym Komisji Europejskiej (stan na 2024)?",
+            options: ["Donald Tusk", "Angela Merkel", "Ursula von der Leyen", "Emmanuel Macron", "Charles Michel"],
+            correct: 2
+        },
+        {
+            question: "Jakie państwo jako jedyne do tej pory opuściło Unię Europejską (Brexit)?",
+            options: ["Francja", "Wielka Brytania", "Grecja", "Norwegia", "Włochy"],
+            correct: 1
+        },
+        {
+            question: "W którym roku założono NATO?",
+            options: ["1939", "1945", "1949", "1955", "1991"],
+            correct: 2
+        },
+        {
+            question: "Który organ ONZ jest odpowiedzialny za utrzymanie pokoju i bezpieczeństwa?",
+            options: ["Rada Gospodarcza i Społeczna", "Rada Bezpieczeństwa", "Międzynarodowy Fundusz Walutowy", "UNESCO", "UNICEF"],
+            correct: 1
+        },
+        {
+            question: "Jakim rodzajem państwa jest Afganistan po przejęciu władzy przez Talibów?",
+            options: ["Państwem w pełni demokratycznym", "Państwem niestabilnym / upadłym", "Mocarstwem atomowym", "Członkiem Unii Europejskiej", "Państwem o wysokim rozwoju społecznym"],
+            correct: 1
+        },
+        {
+            question: "Jaki status miała Polska przy zakładaniu ONZ w 1945 roku?",
+            options: ["Nie została zaproszona", "Była członkiem założycielem (pierwotnym)", "Przystąpiła dopiero w 1989 roku", "Została członkiem obserwatorem", "Została odrzucona przez weto ZSRR"],
+            correct: 1
+        },
+        {
+            question: "Traktat z Maastricht (1992) powołał do życia:",
+            options: ["NATO", "ONZ", "Unię Europejską", "Ligę Narodów", "Układ Warszawski"],
+            correct: 2
+        },
+        {
+            question: "Co oznacza pojęcie „suwerenność państwa”?",
+            options: ["Zależność od decyzji innego mocarstwa", "Zdolność do samodzielnego sprawowania władzy nad terytorium i ludnością", "Konieczność posiadania dostępu do morza", "Brak możliwości posiadania armii", "Obowiązek należenia do NATO"],
+            correct: 1
+        }        ,
+        {
+            question: "Czym zajmuje się Światowa Organizacja Zdrowia (WHO)?",
+            options: ["Koordynacją ochrony zdrowia publicznego na świecie", "Organizowaniem igrzysk olimpijskich", "Handlem bronią między państwami", "Ustalaniem kursów walut", "Ochroną zabytków kultury"],
+            correct: 0
+        },
+        {
+            question: "Gdzie znajduje się siedziba Rady Europy?",
+            options: ["W Strasburgu (Francja)", "W Brukseli (Belgia)", "W Nowym Jorku (USA)", "W Warszawie (Polska)", "W Londynie (Wielka Brytania)"],
+            correct: 0
+        },
+        {
+            question: "Jaki jest główny cel Światowej Organizacji Handlu (WTO)?",
+            options: ["Liberalizacja handlu międzynarodowego i obniżanie ceł", "Wysyłanie misji wojskowych", "Walka z pandemią", "Ochrona gatunków zagrożonych", "Podbój kosmosu"],
+            correct: 0
+        },
+        {
+            question: "Kto jest tzw. „aktorem pozapaństwowym” w stosunkach międzynarodowych?",
+            options: ["Organizacje terrorystyczne, korporacje i organizacje pozarządowe (NGO)", "Tylko prezydenci mocarstw", "Wyłącznie rządy państw należących do ONZ", "Sądy krajowe", "Armie narodowe"],
+            correct: 0
+        },
+        {
+            question: "Czym zajmuje się OBWE (Organizacja Bezpieczeństwa i Współpracy w Europie)?",
+            options: ["Zapobieganiem konfliktom i monitorowaniem wyborów", "Ustalaniem stóp procentowych w bankach", "Organizacją mistrzostw w piłce nożnej", "Produkcją szczepionek", "Handlem ropą naftową"],
+            correct: 0
+        },
+        {
+            question: "Kto jest obecnym Sekretarzem Generalnym NATO?",
+            options: ["Jens Stoltenberg", "Joe Biden", "Donald Trump", "Olaf Scholz", "Emmanuel Macron"],
+            correct: 0
+        },
+        {
+            question: "Kto reprezentuje Polskę na szczytach Rady Europejskiej (szefów rządów państw UE)?",
+            options: ["Premier RP", "Marszałek Sejmu", "Minister Zdrowia", "Ambasador w USA", "Prezes NBP"],
+            correct: 0
+        },
+        {
+            question: "Jaki Polak pełnił funkcję Przewodniczącego Rady Europejskiej w latach 2014–2019?",
+            options: ["Donald Tusk", "Lech Wałęsa", "Aleksander Kwaśniewski", "Andrzej Duda", "Jerzy Buzek"],
+            correct: 0
+        },
+        {
+            question: "Kto jest obecnym Stałym Przedstawicielem Polski przy ONZ w Nowym Jorku?",
+            options: ["Krzysztof Szczerski", "Radosław Sikorski", "Szymon Hołownia", "Rafał Trzaskowski", "Jarosław Kaczyński"],
+            correct: 0
+        },
+        {
+            question: "Jak nazywa się instytucja sądowa Rady Europy, do której obywatele mogą skarżyć swoje państwo?",
+            options: ["Europejski Trybunał Praw Człowieka (ETPC)", "Międzynarodowy Trybunał Karny", "Sąd Najwyższy USA", "Trybunał Stanu", "Sąd Rejonowy w Strasburgu"],
+            correct: 0
+        },
+        {
+            question: "Kto jest obecną Przewodniczącą Parlamentu Europejskiego ?",
+            options: ["Roberta Metsola", "Ursula von der Leyen", "Angela Merkel", "Beata Szydło", "Christine Lagarde"],
+            correct: 0
+        },
+        {
+            question: "Kto jest obecnym Przewodniczącym Rady Europejskiej?",
+            options: ["Charles Michel", "Boris Johnson", "Viktor Orban", "Donald Trump", "Jens Stoltenberg"],
+            correct: 0
+        },
+        {
+            question: "Który z poniższych podmiotów jest przykładem międzynarodowej korporacji (aktora pozapaństwowego)?",
+            options: ["Google / Alphabet", "Rząd Francji", "ONZ", "NATO", "Miasto Warszawa"],
+            correct: 0
+        },
+        {
+            question: "Czym jest Amnesty International?",
+            options: ["Międzynarodową organizacją pozarządową (NGO) walczącą o prawa człowieka", "Agencją rządową USA", "Firmą produkującą broń", "Zespołem muzycznym", "Organizacją handlową"],
+            correct: 0
+        },
+        {
+            question: "Polskim komisarzem w Komisji Europejskiej jest:",
+            options: ["Piotr Serafin", "Radosław Sikorski", "Elżbieta Bieńkowska", "Danuta Hübner", "Leszek Balcerowicz"],
+            correct: 0
+        },
+        {
+            question: "Ile państw posiada prawo weta w Radzie Bezpieczeństwa ONZ (stali członkowie)?",
+            options: ["5 (USA, Rosja, Chiny, Francja, Wlk. Brytania)", "10", "27 (wszystkie państwa UE)", "1 (tylko USA)", "0 (decyduje większość)"],
+            correct: 0
+        },
+        {
+            question: "Czym zajmuje się UNESCO?",
+            options: ["Kulturą, sztuką, nauką i ochroną dziedzictwa światowego", "Wymianą walut", "Organizacją armii europejskiej", "Ochroną granic morskich", "Produkcją żywności"],
+            correct: 0
+        },
+        {
+            question: "Jaki jest główny cel UNICEF?",
+            options: ["Pomoc dzieciom na świecie (żywność, edukacja, zdrowie)", "Wspieranie banków", "Budowa autostrad", "Szkolenie żołnierzy", "Badanie kosmosu"],
+            correct: 0
+        },
+        {
+            question: "Kto jest Zwierzchnikiem Sił Zbrojnych RP, który reprezentuje Polskę na szczytach NATO?",
+            options: ["Prezydent Rzeczypospolitej Polskiej", "Minister Obrony Narodowej", "Marszałek Senatu", "Prymas Polski", "Prezes Telewizji Polskiej"],
+            correct: 0
+        },
+        {
+            question: "Czym różni się Rada Europy od Rady Europejskiej?",
+            options: ["Rada Europy to osobna organizacja (prawa człowieka), a Rada Europejska to instytucja UE", "To ta sama organizacja", "Rada Europy zajmuje się sportem, a Rada Europejska rolnictwem", "Rada Europy jest w USA, a Rada Europejska w Azji", "Rada Europy to nazwa banku"],
+            correct: 0
+        },
+        {
+            question: "Ilu posłów do Parlamentu Europejskiego (europosłów) wybierano w Polsce w 2024 roku?",
+            options: ["53", "100", "460", "15", "1"],
+            correct: 0
+        },
+        {
+            question: "Jak nazywa się grupa 7 najbardziej wpływowych gospodarczo państw zachodnich?",
+            options: ["G7", "G20", "Grupa Wyszehradzka", "Trójkąt Weimarski", "BRICS"],
+            correct: 0
+        },
+        {
+            question: "Greenpeace to przykład:",
+            options: ["Międzynarodowej organizacji pozarządowej (ekologicznej)", "Partii politycznej w Polsce", "Organizacji terrorystycznej", "Agencji rządowej ONZ", "Firmy wydobywczej"],
+            correct: 0
+        },
+        {
+            question: "W którym mieście znajduje się siedziba Międzynarodowego Trybunału Sprawiedliwości (główny organ sądowy ONZ)?",
+            options: ["W Hadze (Holandia)", "W Paryżu (Francja)", "W Berlinie (Niemcy)", "W Rzymie (Włochy)", "W Madrycie (Hiszpania)"],
+            correct: 0
+        },
+        {
+            question: "Które z państw jest stałym członkiem Rady Bezpieczeństwa ONZ i posiada broń atomową?",
+            options: ["Francja", "Polska", "Niemcy", "Japonia", "Brazylia"],
+            correct: 0
+        },
+        {
+            question: "Co oznacza termin „Brexit”?",
+            options: ["Wyjście Wielkiej Brytanii z Unii Europejskiej", "Wejście Brazylii do NATO", "Rozpad Związku Radzieckiego", "Utworzenie nowej waluty w Belgii", "Nazwa brytyjskiego święta"],
+            correct: 0
+        },
+        {
+            question: "Kto stoi na czele dyplomacji Unii Europejskiej (Szef unijnej dyplomacji)?",
+            options: ["Wysoki przedstawiciel Unii do spraw zagranicznych", "Król Belgii", "Sekretarz Generalny ONZ", "Prezydent Francji", "Premier Polski"],
+            correct: 0
+        },
+        {
+            question: "Al-Kaida i ISIS to przykłady jakiego rodzaju aktorów w polityce?",
+            options: ["Międzynarodowych organizacji terrorystycznych (aktorzy pozapaństwowi)", "Legalnych partii politycznych", "Organizacji charytatywnych", "Agencji ONZ", "Sojuszy wojskowych"],
+            correct: 0
+        },
+        {
+            question: "Co to jest 'Trójkąt Weimarski'?",
+            options: ["Grupa współpracy Polski, Niemiec i Francji", "Nazwa pizzy", "Sojusz Polski, USA i Wielkiej Brytanii", "Trzy najważniejsze miasta w Europie", "Nazwa góry w Niemczech"],
+            correct: 0
+        },
+        {
+            question: "Kto wybiera Przewodniczącego Komisji Europejskiej?",
+            options: ["Parlament Europejski na wniosek Rady Europejskiej", "Prezydent USA", "Obywatele w bezpośrednim głosowaniu internetowym", "Królowa Danii", "Losowanie totolotka"],
+            correct: 0 }
+            ,
+        {
+            question: "Kto jest obecnym Stałym Przedstawicielem Polski przy NATO (stan na 2024)?",
+            options: ["Jacek Najder", "Tomasz Szatkowski", "Radosław Sikorski", "Marek Magierowski", "Adam Szlapka"],
+            correct: 0
+        },
+        {
+            question: "Kto pełni funkcję Polskiego Przedstawiciela Wojskowego przy Komitetach Wojskowych NATO i UE?",
+            options: ["Generał broni Sławomir Wojciechowski", "Generał Rajmund Andrzejczak", "Generał Wiesław Kukuła", "Generał Waldemar Skrzypczak", "Generał Roman Polko"],
+            correct: 0
+        },
+        {
+            question: "W jakim mieście odbyła się konferencja założycielska ONZ (podpisanie Karty Narodów Zjednoczonych w 1945)?",
+            options: ["San Francisco (USA)", "Nowy Jork (USA)", "Waszyngton (USA)", "Genewa (Szwajcaria)", "Londyn (Wielka Brytania)"],
+            correct: 0
+        },
+        {
+            question: "Unia Europejska została formalnie założona 1 listopada 1993 roku na skutek wejścia w życie:",
+            options: ["Traktatu z Maastricht", "Traktatu Rzymskiego", "Traktatu Lizbońskiego", "Traktatu Paryskiego", "Deklaracji Niepodległości"],
+            correct: 0
+        },
+        {
+            question: "Kto jest obecnym Stałym Przedstawicielem Polski przy Narodach Zjednoczonych (ONZ) w Nowym Jorku?",
+            options: ["Krzysztof Szczerski", "Jacek Najder", "Witold Waszczykowski", "Zbigniew Rau", "Rafał Trzaskowski"],
+            correct: 0
+        },
+        {
+            question: "Jak nazywa się dokument podpisany w 1945 roku, będący statutem ONZ?",
+            options: ["Karta Narodów Zjednoczonych", "Konstytucja Świata", "Deklaracja Praw Człowieka", "Traktat Wersalski", "Umowa Paryska"],
+            correct: 0
+        },
+        {
+            question: "Który z polskich generałów był Szefem Sztabu Generalnego WP w latach 2018-2023?",
+            options: ["Generał Rajmund Andrzejczak", "Generał Sławomir Wojciechowski", "Generał Czesław Kiszczak", "Generał Wojciech Jaruzelski", "Generał Stanisław Koziej"],
+            correct: 0
+        },
+        {
+            question: "Co było bezpośrednim skutkiem Traktatu z Maastricht?",
+            options: ["Powstanie Unii Europejskiej z Europejskiej Wspólnoty Gospodarczej", "Zakończenie II wojny światowej", "Powstanie NATO", "Upadek Muru Berlińskiego", "Wstąpienie Polski do ONZ"],
+            correct: 0
+        },
+        {
+            question: "Kto reprezentuje Polskę w Komitecie Wojskowym NATO (najwyższy organ wojskowy sojuszu)?",
+            options: ["Polski Przedstawiciel Wojskowy (obecnie gen. Sławomir Wojciechowski)", "Minister Finansów", "Ambasador w Berlinie", "Prezydent Warszawy", "Marszałek Sejmu"],
+            correct: 0
+        },
+        {
+            question: "Gdzie znajduje się obecna siedziba główna (sekretariat) ONZ (choć założono ją w San Francisco)?",
+            options: ["W Nowym Jorku", "W San Francisco", "W Los Angeles", "W Chicago", "W Miami"],
+            correct: 0
+        }
+        
+    ];
+
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const questionCounter = document.getElementById('question-counter');
+    const nextBtn = document.getElementById('next-btn');
+    const progressFill = document.getElementById('progress-fill');
+    const finalScore = document.getElementById('final-score');
+    const resultMessage = document.getElementById('result-message');
+
+    // Funkcja tasująca tablicę (Fisher-Yates)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Start quizu
+    function startQuiz(mode) {
+        let shuffled = shuffleArray([...allQuestions]);
+
+        if (mode === 'one') {
+            // Tylko 1 pytanie
+            currentQuestions = shuffled.slice(0, 1);
+        } else if (mode === 'ten') {
+            // 10 pytań
+            currentQuestions = shuffled.slice(0, 10);
+        } else {
+            currentQuestions = [...allQuestions];
+        }
+
+        currentQuestionIndex = 0;
+        score = 0;
+        
+        startScreen.style.display = 'none';
+        resultScreen.style.display = 'none';
+        quizScreen.style.display = 'block';
+
+        loadQuestion();
+    }
+
+    // Ładowanie pytania
+    function loadQuestion() {
+        const q = currentQuestions[currentQuestionIndex];
+        
+        // Reset widoku
+        nextBtn.style.display = 'none';
+        
+        // Ustawienie tekstu na przycisku (jeśli to ostatnie pytanie)
+        if (currentQuestionIndex === currentQuestions.length - 1) {
+            nextBtn.textContent = "Zakończ i pokaż wynik 🏁";
+        } else {
+            nextBtn.textContent = "Następne pytanie ➜";
+        }
+
+        optionsContainer.innerHTML = '';
+        questionText.textContent = q.question;
+        
+        questionCounter.textContent = `Pytanie ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
+        const progress = ((currentQuestionIndex) / currentQuestions.length) * 100;
+        progressFill.style.width = `${progress}%`;
+
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.classList.add('option-btn');
+            btn.textContent = opt;
+            btn.onclick = () => checkAnswer(index, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    // Sprawdzanie odpowiedzi
+    function checkAnswer(selectedIndex, btnElement) {
+        const q = currentQuestions[currentQuestionIndex];
+        const buttons = optionsContainer.querySelectorAll('.option-btn');
+
+        // Zablokuj wszystkie przyciski
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (selectedIndex === q.correct) {
+            // Dobra odpowiedź
+            btnElement.classList.add('correct');
+            score++;
+        } else {
+            // Zła odpowiedź
+            btnElement.classList.add('wrong');
+            // Pokaż poprawną
+            buttons[q.correct].classList.add('correct');
+        }
+
+        nextBtn.style.display = 'block';
+        
+        const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+        progressFill.style.width = `${progress}%`;
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        
+        if (currentQuestionIndex < currentQuestions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    // Pokaż wyniki
+    function showResults() {
+        quizScreen.style.display = 'none';
+        resultScreen.style.display = 'block';
+        
+        finalScore.textContent = `${score} / ${currentQuestions.length}`;
+        
+        const percentage = (score / currentQuestions.length) * 100;
+        
+
+    }
+
+</script>
+
+</body>
+</html>
