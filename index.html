@@ -3,499 +3,943 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz: Stosunki Polityczne i Międzynarodowe</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Quiz - Networking Basics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .question-container {
+            margin: 20px 0;
+        }
+        
+        .question {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .options {
+            list-style: none;
+        }
+        
+        .option {
+            background: #f5f5f5;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .option:hover {
+            background: #e8e8e8;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: #667eea;
+            background: #e8eaf6;
+        }
+        
+        .option.correct {
+            background: #c8e6c9;
+            border-color: #4caf50;
+        }
+        
+        .option.incorrect {
+            background: #ffcdd2;
+            border-color: #f44336;
+        }
+        
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .feedback {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #c8e6c9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .feedback.incorrect {
+            background: #ffcdd2;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+        
+        .explanation {
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff9c4;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .btn-next {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-next:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-next:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .final-score {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .final-score h2 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .final-score p {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+        
+        .restart-btn {
+            background: #4caf50;
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .restart-btn:hover {
+            background: #45a049;
+        }
+        
+        .question-number {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-
-<div class="container">
-    
-    <div class="start-screen" id="start-screen">
-        <h1> Quiz </h1>
-        <p class="subtitle">brakuje czegoś?</p>
+    <div class="container">
+        <h1>🌐 Networking Basics Quiz</h1>
+        <div class="score">Wynik: <span id="score">0</span>/<span id="total">64</span></div>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
         
-        <button class="mode-btn single" onclick="startQuiz('one')">Szybki strzał w głowę :) (1 losowe pytanie)</button>
-        <button class="mode-btn" onclick="startQuiz('ten')">Losowe 10 pytań</button>
-        <button class="mode-btn secondary" onclick="startQuiz('all')">Wszystkie pytania (Losowo)</button>
+        <div id="quizContainer"></div>
     </div>
 
-    <div class="quiz-screen" id="quiz-screen">
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        <div class="question-header">
-            <span id="question-counter">Pytanie 1/10</span>
-        </div>
-        <div class="question-text" id="question-text">
-            Treść pytania...
-        </div>
-        <div class="options-container" id="options-container">
-        </div>
-        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Następne pytanie ➜</button>
-    </div>
+    <script>
+        const quizDataOriginal = [
+            {
+                question: "Which statement describes the use of powerline networking technology?",
+                options: [
+                    "A device connects to an existing home LAN using an adapter and an existing electrical outlet.",
+                    "New \"smart\" electrical cabling is used to extend an existing home LAN.",
+                    "Wireless access points use powerline adapters to distribute data through the home LAN.",
+                    "A home LAN is installed without the use of physical cabling."
+                ],
+                correct: 0,
+                explanation: "Powerline networking adds the ability to connect a device to the network using an adapter wherever there is an electrical outlet. The network uses existing electrical wiring to send data."
+            },
+            {
+                question: "Which wireless RF band do IEEE 802.11b/g devices use?",
+                options: ["60 GHz", "2.4 GHz", "900 MHz", "5 GHz"],
+                correct: 1,
+                explanation: "802.11b/g/n devices all operate at 2.4 GHz."
+            },
+            {
+                question: "Which term correctly identifies the device type that is included in the area B (routers and switches)?",
+                options: ["end", "transfer", "source", "intermediary"],
+                correct: 3,
+                explanation: "Routers and switches are intermediary devices. End devices consist of PCs, laptops, and servers."
+            },
+            {
+                question: "What is a disadvantage of deploying a peer-to-peer network model?",
+                options: [
+                    "lack of centralized administration",
+                    "high cost",
+                    "difficulty of setup",
+                    "high degree of complexity"
+                ],
+                correct: 0,
+                explanation: "The primary disadvantages of a peer-to-peer network are its lack of central administration, minimal security, and its lack of scalability."
+            },
+            {
+                question: "Which three steps must be completed to manually connect an Android or IOS device to a secured wireless network? (Choose three)",
+                options: [
+                    "Change the MAC address",
+                    "Set the IP address",
+                    "Enter the network SSID",
+                    "Activate the Bluetooth antenna",
+                    "Input the authentication password",
+                    "Choose the correct security type"
+                ],
+                correct: [2, 4, 5],
+                multiple: true,
+                explanation: "To connect manually: Enter the network SSID, Choose the security type, Input the password."
+            },
+            {
+                question: "What are three characteristics of a peer-to-peer network? (Choose three)",
+                options: [
+                    "better security",
+                    "scalable",
+                    "easy to create",
+                    "better device performance when acting as both client and server",
+                    "less cost to implement",
+                    "lacks centralized administration"
+                ],
+                correct: [2, 4, 5],
+                multiple: true,
+                explanation: "Peer-to-peer networks are easy to create, less complex, have lower costs, and have no centralized administration."
+            },
+            {
+                question: "Which type of device provides an Internet connection through the use of a phone jack?",
+                options: ["satellite modem", "Wi-Fi AP", "DSL modem", "cable modem"],
+                correct: 2,
+                explanation: "DSL technology uses the existing telephone network. For that reason, a DSL modem commonly has an RJ-11 phone connector."
+            },
+            {
+                question: "A traveling sales representative uses a cell phone to interact with the home office. Which internet connectivity method would be preferred on the mobile device due to low cost?",
+                options: ["cellular", "Wi-Fi", "DSL", "cable"],
+                correct: 1,
+                explanation: "The Wi-Fi connection is preferred because it uses less battery power and is free in many places."
+            },
+            {
+                question: "A user is configuring a wireless access point and wants to prevent any neighbors from discovering the network. What action does the user need to take?",
+                options: [
+                    "Configure DMZ settings",
+                    "Disable SSID broadcast",
+                    "Configure a DNS server",
+                    "Enable WPA encryption"
+                ],
+                correct: 1,
+                explanation: "Disabling SSID broadcast prevents the access point from announcing the name of the network."
+            },
+            {
+                question: "What can a tourist do to allow the laptop to connect to the internet using smartphone's 3G/4G?",
+                options: [
+                    "Enable tethering and create a hotspot",
+                    "Use the smartphone to access web pages and then pass the web pages to the laptop",
+                    "Use the smartphone to access the internet through a satellite connection",
+                    "Use an Ethernet cable to connect the smartphone to the laptop"
+                ],
+                correct: 0,
+                explanation: "When a cellular phone allows Wi-Fi devices to connect and use the mobile data network, this is called a hotspot."
+            },
+            {
+                question: "What layer is responsible for routing messages through an internetwork in the TCP/IP model?",
+                options: ["network access", "session", "transport", "internet"],
+                correct: 3,
+                explanation: "Of the four TCP/IP layers, it is the internet layer that is responsible for routing messages."
+            },
+            {
+                question: "What will a Cisco LAN switch do if it receives an incoming frame and the destination MAC address is not listed in the MAC address table?",
+                options: [
+                    "Send the frame to the default gateway address",
+                    "Drop the frame",
+                    "Forward the frame out all ports except the port where the frame is received",
+                    "Use ARP to resolve the port that is related to the frame"
+                ],
+                correct: 2,
+                explanation: "The switch forwards the frame out all ports except for the ingress port of the frame."
+            },
+            {
+                question: "What process involves placing one message format inside of another message format?",
+                options: ["flow control", "encapsulation", "encoding", "segmentation"],
+                correct: 1,
+                explanation: "When a message is placed inside of another message, this is known as encapsulation."
+            },
+            {
+                question: "What is one advantage of using fiber-optic cabling compared to copper cabling?",
+                options: [
+                    "The installation skills required for fiber-optic cabling are lower",
+                    "Fiber-optic cabling can transmit signals without attenuation",
+                    "Fiber-optic cabling is completely immune to EMI and RFI",
+                    "The cost of fiber-optic connectors is lower"
+                ],
+                correct: 2,
+                explanation: "Fiber-optic cabling is immune to RFI and EMI, and can transmit signals with less attenuation."
+            },
+            {
+                question: "What data encoding technology is used in copper cables?",
+                options: [
+                    "electrical pulses",
+                    "modulation of specific frequencies of electromagnetic waves",
+                    "modulation of light rays",
+                    "pulses of light"
+                ],
+                correct: 0,
+                explanation: "Data in copper cables is encoded into electrical impulses."
+            },
+            {
+                question: "What information is added to the switch table from incoming frames?",
+                options: [
+                    "destination IP address and incoming port number",
+                    "source MAC address and incoming port number",
+                    "source IP address and incoming port number",
+                    "destination MAC address and incoming port number"
+                ],
+                correct: 1,
+                explanation: "A switch builds the MAC address table based on the source MAC address and incoming port."
+            },
+            {
+                question: "At which layer of the OSI model would a logical address be added during encapsulation?",
+                options: ["network layer", "physical layer", "transport layer", "data link layer"],
+                correct: 0,
+                explanation: "Logical addresses (IP addresses) are added at the network layer."
+            },
+            {
+                question: "Which type of network model describes the functions that must be completed at a particular layer, but does not specify exactly how each protocol should work?",
+                options: ["reference model", "hierarchical design model", "protocol model", "TCP/IP model"],
+                correct: 0,
+                explanation: "A reference model does not specify exactly how a function should be accomplished. The OSI model is an example."
+            },
+            {
+                question: "Which two criteria are used to help select a network medium for a network? (Choose two)",
+                options: [
+                    "the environment where the selected medium is to be installed",
+                    "the cost of the end devices that are used in the network",
+                    "the number of intermediate devices that are installed in the network",
+                    "the distance the selected medium can successfully carry a signal",
+                    "the types of data that need to be prioritized"
+                ],
+                correct: [0, 3],
+                multiple: true,
+                explanation: "Criteria include: distance the medium can carry a signal, and the environment where it will be installed."
+            },
+            {
+                question: "Which scenario is suitable for deploying twisted-pair cables?",
+                options: [
+                    "to connect network devices in backbone networks",
+                    "to connect a TV set to the wall plug at home",
+                    "to connect data centers with high bandwidth requirements over long distances",
+                    "to connect PC workstations in an office"
+                ],
+                correct: 3,
+                explanation: "Ethernet technology generally uses twisted-pair cables to interconnect office devices."
+            },
+            {
+                question: "How many bits are represented by each group of four hexadecimal values contained between the colons in an IPv6 address?",
+                options: ["16", "64", "4", "32", "8"],
+                correct: 0,
+                explanation: "The four hexadecimal values contained in a hextet represent 16 bits."
+            },
+            {
+                question: "When the lease of a dynamically assigned IPv4 address has expired, what Layer 2 and Layer 3 destination addresses will a workstation use?",
+                options: [
+                    "FF-FF-FF-FF-FF-FF and 255.255.255.255",
+                    "MAC address of the DHCP server and 255.255.255.255",
+                    "FF-FF-FF-FF-FF-FF and IPv4 address of the DHCP server",
+                    "both MAC and IPv4 addresses of the DHCP server"
+                ],
+                correct: 0,
+                explanation: "The workstation sends a DHCPDISCOVER via broadcast with FF-FF-FF-FF-FF-FF and 255.255.255.255."
+            },
+            {
+                question: "What are two characteristics of multicast transmission? (Choose two)",
+                options: [
+                    "The source address of a multicast transmission is in the range of 224.0.0.0 to 224.0.0.255",
+                    "Multicast transmission can be used by routers to exchange routing information",
+                    "A single packet can be sent to a group of hosts",
+                    "Multicast messages map lower layer addresses to upper layer addresses",
+                    "Computers use multicast transmission to request IPv4 addresses"
+                ],
+                correct: [1, 2],
+                multiple: true,
+                explanation: "Multicast is used by routing protocols and sends a single packet to a group of hosts."
+            },
+            {
+                question: "Which three types of nodes should be assigned static IP addresses on a network? (Choose three)",
+                options: [
+                    "desktop PCs",
+                    "printers",
+                    "mobile laptops",
+                    "gateways",
+                    "tablets",
+                    "servers"
+                ],
+                correct: [1, 3, 5],
+                multiple: true,
+                explanation: "Servers, printers, and gateways should have statically assigned IP addresses."
+            },
+            {
+                question: "What benefit does DHCP provide to a network?",
+                options: [
+                    "DHCP allows users to refer to locations by a name rather than an IP address",
+                    "Hosts always have the same IP address and are therefore always reachable",
+                    "Hosts can connect to the network and get an IP address without manual configuration",
+                    "Duplicate addresses cannot occur on a network that uses DHCP"
+                ],
+                correct: 2,
+                explanation: "DHCP provides automatic IP address configuration to hosts on a network."
+            },
 
-    <div class="result-screen" id="result-screen">
-        <h2>Koniec Quizu!</h2>
-        <p>Twój wynik to:</p>
-        <div class="score-display" id="final-score">0 / 0</div>
-        <p id="result-message"></p>
-        <button class="restart-btn" onclick="location.reload()">Zagraj jeszcze raz</button>
-    </div>
+            {
+                question: "Which number grouping is a valid IPv6 address?",
+                options: [
+                    "1234:1230::1238::1299:1000::",
+                    "1b10::1100::2001::2900::ab11::1102::0000::2900",
+                    "2001:0db8:3c55:0015:1010:0000:abcd:ff13",
+                    "12aa::1298:1200::129b"
+                ],
+                correct: 2,
+                explanation: "A valid IPv6 can only use double colon (::) once, and must have proper hexadecimal format."
+            },
+            {
+                question: "Why does the device return an error for IPv6 address 2001:db8::1111::0200?",
+                options: [
+                    "The IPv6 address notation is incorrect",
+                    "IPv6 is not implemented on this network",
+                    "The device already is configured with an IPv4 address",
+                    "The address is already in use on the network"
+                ],
+                correct: 0,
+                explanation: "The address contains two instances of double colon (::), which is invalid. It can only be used once."
+            },
+            {
+                question: "What type of route is indicated by the code C in an IPv4 routing table on a Cisco router?",
+                options: [
+                    "directly connected route",
+                    "default route",
+                    "dynamic route learned from another router",
+                    "static route"
+                ],
+                correct: 0,
+                explanation: "C stands for directly connected route in routing table codes."
+            },
+            {
+                question: "In which two scenarios does a wireless router perform NAT? (Choose two)",
+                options: [
+                    "when a host is sending packets to the ISP to request a speed increase",
+                    "when a host is sending packets to a local server",
+                    "when a host is sending packets to a remote site to request device manual",
+                    "when a host is sending a print job to a network printer on the LAN",
+                    "when a host is sending HTTP packets to the wireless router"
+                ],
+                correct: [2],
+                explanation: "NAT is performed when translating private (local) to public (global) addresses for remote sites."
+            },
+            {
+                question: "What happens when host A wants to send an IP packet to host D but doesn't have the MAC in ARP table?",
+                options: [
+                    "Host A sends out the packet to the switch which sends it only to host D",
+                    "Host D sends an ARP request to host A",
+                    "Host A sends an ARP request to the MAC address of host D",
+                    "Host A sends out a broadcast of FF:FF:FF:FF:FF:FF"
+                ],
+                correct: 3,
+                explanation: "Host A will send a Layer 2 broadcast (FF:FF:FF:FF:FF:FF) and host D will respond."
+            },
+            {
+                question: "The IP address of which device interface should be used as the default gateway setting of a host?",
+                options: [
+                    "R1: G0/0",
+                    "R2: S0/0/1",
+                    "R1: S0/0/0",
+                    "R2: S0/0/0"
+                ],
+                correct: 0,
+                explanation: "The default gateway is the router interface attached to the LAN where the host resides."
+            },
+            {
+                question: "Which device would you use to best solve broadcast traffic slowing the network?",
+                options: ["switch", "router", "host", "server"],
+                correct: 1,
+                explanation: "A router segments LANs into separate broadcast domains, solving broadcast traffic issues."
+            },
+            {
+                question: "PC1 issues an ARP request because it needs to send a packet to PC3 on another network. What will happen next?",
+                options: [
+                    "SW1 will send an ARP reply with its Fa0/1 MAC address",
+                    "RT1 will send an ARP reply with its own Fa0/0 MAC address",
+                    "RT1 will send an ARP reply with the PC3 MAC address",
+                    "RT1 will forward the ARP request to PC3",
+                    "RT1 will send an ARP reply with its own Fa0/1 MAC address"
+                ],
+                correct: 1,
+                explanation: "The default gateway (RT1) unicasts an ARP reply with its Fa0/0 MAC address."
+            },
+            {
+                question: "Host H2 sends a unicast message to host H6. Which destination IP address is in the packet header when it reaches H6?",
+                options: [
+                    "the IP address assigned to the network adapter on host H2",
+                    "the IP address assigned to the network adapter on host H6",
+                    "the IP address of the FastEthernet0/1 interface on router R1",
+                    "the IP address of the FastEthernet0/0 interface on router R1"
+                ],
+                correct: 1,
+                explanation: "The destination IP address remains the IP address of H6 throughout the transmission."
+            },
+            {
+                question: "Which command would a technician use to display network connections on a host computer?",
+                options: ["ipconfig", "nslookup", "tracert", "netstat"],
+                correct: 3,
+                explanation: "The netstat command displays active TCP connections on a networked host."
+            },
+            {
+                question: "How are port numbers used in the TCP/IP encapsulation process?",
+                options: [
+                    "Source port and destination port numbers are randomly generated",
+                    "Port numbers are not necessary when UDP is used",
+                    "Source port numbers are used to track separate conversations",
+                    "Destination port numbers are assigned automatically and cannot be changed"
+                ],
+                correct: 2,
+                explanation: "Source port numbers are randomly generated and track different conversations."
+            },
+            {
+                question: "When analog voice signals are converted for use on a computer network, in what format are they encapsulated?",
+                options: ["IP packets", "segments", "frames", "bits"],
+                correct: 0,
+                explanation: "When VoIP is used, analog voice signals are translated into digital data in the form of IP packets."
+            },
+            {
+                question: "Based on tracert output, where should the administrator begin troubleshooting when only first hop responds?",
+                options: ["SW1", "R1", "SW2", "PC2", "R2"],
+                correct: 1,
+                explanation: "The first successful response is from the default gateway R1, so troubleshooting should start there."
+            },
+            {
+                question: "Ping to www.example.net fails but mapped drives work. What are two potential causes? (Choose two)",
+                options: [
+                    "The Windows domain or workgroup name is incorrect",
+                    "The computer has been assigned a static IP address",
+                    "The target web server is down",
+                    "DNS service is unavailable",
+                    "The HTTP protocol is not working properly"
+                ],
+                correct: [2, 3],
+                multiple: true,
+                explanation: "Ping fails if destination is down or if DNS is unavailable to convert URL to IP."
+            },
+            {
+                question: "Which wireless technology allows a customer to connect to a payment terminal with a smartphone?",
+                options: ["Wi-Fi", "GPS", "NFC", "Bluetooth"],
+                correct: 2,
+                explanation: "NFC (Near Field Communications) is used in contactless payment systems."
+            },
+            {
+                question: "What are two methods typically used on a mobile device to provide internet connectivity? (Choose two)",
+                options: ["Bluetooth", "cellular", "NFC", "GPS", "Wi-Fi"],
+                correct: [1, 4],
+                multiple: true,
+                explanation: "Mobile devices commonly use Wi-Fi and cellular to connect to the internet."
+            },
+            {
+                question: "What information does an Ethernet switch examine and use to build its address table?",
+                options: [
+                    "destination IP address",
+                    "destination MAC address",
+                    "source IP address",
+                    "source MAC address"
+                ],
+                correct: 3,
+                explanation: "An Ethernet switch examines the source MAC address to build its MAC address table."
+            },
+            {
+                question: "Which two OSI model layers have the same functionality as two layers of the TCP/IP model? (Choose two)",
+                options: ["transport", "network", "data link", "session", "physical"],
+                correct: [0, 1],
+                multiple: true,
+                explanation: "OSI transport = TCP/IP transport, and OSI network = TCP/IP internet layer."
+            },
+            {
+                question: "What is the shortest valid representation of the IPv6 address 2001:0DB8:0000:1470:0000:0000:0000:0200?",
+                options: [
+                    "2001:DB8::1470::200",
+                    "2001:0DB8:0:147::02",
+                    "2001:0DB8::1470:0:0:0:2",
+                    "2001:DB8:0:1470::200"
+                ],
+                correct: 3,
+                explanation: "Double colon can only be used once, and leading zeros can be omitted: 2001:DB8:0:1470::200"
+            },
+            {
+                question: "For what purpose are IPv4 addresses utilized?",
+                options: [
+                    "Burned into the network card to uniquely identify a device",
+                    "Used to identify the number of IP networks available",
+                    "Used to uniquely identify a device on an IP network",
+                    "Used to uniquely identify the application"
+                ],
+                correct: 2,
+                explanation: "An IPv4 address is used to uniquely identify a device on an IP network."
+            },
+            {
+                question: "How is the global address for NAT assigned in a home wireless router?",
+                options: [
+                    "The wireless router acts as a DHCP client to receive global addressing from ISP",
+                    "The default gateway IP address of the LAN device is used",
+                    "The network administrator chooses an available IP address from the LAN",
+                    "The host devices select an unused IP address on the LAN"
+                ],
+                correct: 0,
+                explanation: "The public address is commonly provided via DHCP from the ISP to the router's external interface."
+            },
+            {
+                question: "What destination IP address and port will PC1 use for a DNS query to resolve a web server name?",
+                options: [
+                    "192.168.20.3 port 53",
+                    "192.168.10.1 port 53",
+                    "192.168.20.3 port 80",
+                    "192.168.20.2 port 80",
+                    "192.168.20.2 port 53"
+                ],
+                correct: 4,
+                explanation: "DNS queries use port 53 and are sent to the DNS server address."
+            },
+            {
+                question: "How many bits are in an IPv4 address?",
+                options: ["32", "256", "128", "64"],
+                correct: 0,
+                explanation: "An IPv4 address is 4 octets of 8 bits each, totaling 32 bits."
+            },
+            {
+                question: "When a host sends a packet, how does it determine if the destination is local or remote?",
+                options: [
+                    "It compares the source and destination MAC addresses",
+                    "It queries the DNS server with the destination IP address",
+                    "It checks to see if the default gateway is configured",
+                    "It uses the subnet mask to compare source and destination IP addresses"
+                ],
+                correct: 3,
+                explanation: "The host uses the subnet mask to compare source and destination IP addresses to determine if local or remote."
+            },
+            {
+                question: "PC1 sends ARP request to obtain destination MAC for File_server1. Which MAC address will PC1 receive?",
+                options: [
+                    "the MAC address of the G0/0 interface on R2",
+                    "the MAC address of S2",
+                    "the MAC address of S1",
+                    "the MAC address of File_server1",
+                    "the MAC address of the G0/0 interface on R1"
+                ],
+                correct: 4,
+                explanation: "When communicating with a device on another network, PC1 receives the MAC address of its default gateway (R1 G0/0)."
+            }
+        ];
 
-</div>
+        let quizData = [];
+        let currentQuestion = 0;
+        let score = 0;
 
-<script>
-    const allQuestions = [
-              {
-            question: "Co charakteryzuje tzw. „państwo upadłe”?",
-            options: ["Wysoki wskaźnik eksportu przy niskim imporcie", "Nadmiernie rozbudowana biurokracja", "Rozpad struktur państwowych i brak władzy centralnej", "Przynależność do zbyt wielu organizacji międzynarodowych", "Bardzo silna armia i policja kontrolująca obywateli"],
-            correct: 2
-        },
-        {
-            question: "Które z poniższych państw jest klasycznym przykładem państwa upadłego?",
-            options: ["Szwajcaria", "Japonia", "Norwegia", "Somalia", "Kanada"],
-            correct: 3
-        },
-        {
-            question: "Czym charakteryzuje się „państwo dysfunkcyjne”?",
-            options: ["Jest to państwo, które nie posiada dostępu do morza", "Jest to państwo, które nie posiada własnej waluty", "Jest to państwo, które zostało podbite przez sąsiada", "Jest to państwo, w którym nie działa jeden z kluczowych elementów, mimo istnienia władzy", "Jest to państwo o ustroju monarchicznym"],
-            correct: 3
-        },
-        {
-            question: "Który z poniższych krajów można uznać za przykład państwa dysfunkcyjnego?",
-            options: ["Niemcy", "Australia", "Wenezuela", "Finlandia", "Portugalia"],
-            correct: 2
-        },
-        {
-            question: "Jaka sytuacja polityczna jest kojarzona z Syrią lub Libią w ostatnich latach?",
-            options: ["Stabilny wzrost gospodarczy", "Przystąpienie do Unii Europejskiej", "Wojna domowa", "Pokojowa zmiana ustroju", "Organizacja Igrzysk Olimpijskich"],
-            correct: 2
-        },
-        {
-            question: "Czym zajmują się agencje takie jak Moody’s, S&P czy Fitch?",
-            options: ["Organizacją pomocy humanitarnej", "Wysyłaniem misji pokojowych na wojnę", "Ochroną środowiska naturalnego", "Ściganiem przestępców wojennych", "Oceną wiarygodności kredytowej (ratingiem)"],
-            correct: 4
-        },
-        {
-            question: "Kiedy Polska wstąpiła do NATO?",
-            options: ["12 marca 1999 roku", "1 maja 2004 roku", "4 czerwca 1989 roku", "11 września 2001 roku", "24 lutego 2022 roku"],
-            correct: 0
-        },
-        {
-            question: "Kiedy Polska stała się członkiem Unii Europejskiej?",
-            options: ["1 stycznia 1999 roku", "11 listopada 1918 roku", "13 grudnia 1981 roku", "1 maja 2004 roku", "1 lipca 2012 roku"],
-            correct: 3
-        },
-        {
-            question: "W którym roku powstała Organizacja Narodów Zjednoczonych (ONZ)?",
-            options: ["1918", "1939", "1945", "1960", "1989"],
-            correct: 2
-        },
-        {
-            question: "Gdzie znajduje się główna siedziba Kwatery Głównej NATO?",
-            options: ["W Waszyngtonie", "W Brukseli", "W Berlinie", "W Paryżu", "W Londynie"],
-            correct: 1
-        },
-        {
-            question: "Jak nazywa się obecny Sekretarz Generalny ONZ?",
-            options: ["Jens Stoltenberg", "Donald Trump", "Ursula von der Leyen", "Joe Biden", "António Guterres"],
-            correct: 4
-        },
-        {
-            question: "Ile państw członkowskich liczyła UE w momencie przystąpienia Polski (po rozszerzeniu w 2004)?",
-            options: ["25", "6", "12", "15", "50"],
-            correct: 0
-        },
-        {
-            question: "Co oznacza skrót OBWE?",
-            options: ["Ogólnopolska Baza Wiedzy Ekonomicznej", "Organizacja Bojowa Wschód-Europa", "Organizacja Bezpieczeństwa i Współpracy w Europie", "Obszar Bezpiecznego Wymiaru Europejskiego", "Ochrona Bardzo Ważnych Elementów"],
-            correct: 2
-        },
-        {
-            question: "Artykuł 5 Traktatu Północnoatlantyckiego (NATO) mówi o:",
-            options: ["Wspólnej walucie", "Zasadzie kolektywnej obrony (atak na jednego to atak na wszystkich)", "Wolnym handlu bez ceł", "Ochronie praw autorskich", "Zakazie posiadania broni nuklearnej"],
-            correct: 1
-        },
-        {
-            question: "Które miasto jest główną siedzibą ONZ?",
-            options: ["Genewa", "Wiedeń", "Rzym", "Nowy Jork", "Haga"],
-            correct: 3
-        },
-        {
-            question: "Czym jest strefa Schengen?",
-            options: ["Obszarem bez kontroli na granicach wewnętrznych", "Obszarem, gdzie obowiązuje waluta Euro", "Strefą wolnego handlu z USA", "Obszarem objętym działaniami wojennymi", "Strefą wyłącznego rybołówstwa"],
-            correct: 0
-        },
-        {
-            question: "Czy Polska jest członkiem strefy Euro?",
-            options: ["Tak, od 2004 roku", "Tak, od 2012 roku", "Nie, Polska posiada własną walutę", "Tak, ale tylko w transakcjach międzynarodowych", "Nie, ponieważ została wyrzucona ze strefy"],
-            correct: 2
-        },
-        {
-            question: "Kto jest obecnym przewodniczącym Komisji Europejskiej (stan na 2024)?",
-            options: ["Donald Tusk", "Ursula von der Leyen", "Angela Merkel", "Emmanuel Macron", "Charles Michel"],
-            correct: 1
-        },
-        {
-            question: "Jakie państwo jako jedyne do tej pory opuściło Unię Europejską (Brexit)?",
-            options: ["Francja", "Grecja", "Norwegia", "Włochy", "Wielka Brytania"],
-            correct: 4
-        },
-        {
-            question: "W którym roku założono NATO?",
-            options: ["1939", "1945", "1955", "1949", "1991"],
-            correct: 3
-        },
-        {
-            question: "Który organ ONZ jest odpowiedzialny za utrzymanie pokoju i bezpieczeństwa?",
-            options: ["Rada Bezpieczeństwa", "Rada Gospodarcza i Społeczna", "Międzynarodowy Fundusz Walutowy", "UNESCO", "UNICEF"],
-            correct: 0
-        },
-        {
-            question: "Jakim rodzajem państwa jest Afganistan po przejęciu władzy przez Talibów?",
-            options: ["Państwem w pełni demokratycznym", "Mocarstwem atomowym", "Państwem niestabilnym / upadłym", "Członkiem Unii Europejskiej", "Państwem o wysokim rozwoju społecznym"],
-            correct: 2
-        },
-        {
-            question: "Jaki status miała Polska przy zakładaniu ONZ w 1945 roku?",
-            options: ["Nie została zaproszona", "Była członkiem założycielem (pierwotnym)", "Przystąpiła dopiero w 1989 roku", "Została członkiem obserwatorem", "Została odrzucona przez weto ZSRR"],
-            correct: 1
-        },
-        {
-            question: "Traktat z Maastricht (1992) powołał do życia:",
-            options: ["NATO", "ONZ", "Ligę Narodów", "Unię Europejską", "Układ Warszawski"],
-            correct: 3
-        },
-        {
-            question: "Co oznacza pojęcie „suwerenność państwa”?",
-            options: ["Zdolność do samodzielnego sprawowania władzy nad terytorium i ludnością", "Zależność od decyzji innego mocarstwa", "Konieczność posiadania dostępu do morza", "Brak możliwości posiadania armii", "Obowiązek należenia do NATO"],
-            correct: 0
-        },
-        {
-            question: "Czym zajmuje się Światowa Organizacja Zdrowia (WHO)?",
-            options: ["Organizowaniem igrzysk olimpijskich", "Handlem bronią między państwami", "Ustalaniem kursów walut", "Ochroną zabytków kultury", "Koordynacją ochrony zdrowia publicznego na świecie"],
-            correct: 4
-        },
-        {
-            question: "Gdzie znajduje się siedziba Rady Europy?",
-            options: ["W Brukseli (Belgia)", "W Strasburgu (Francja)", "W Nowym Jorku (USA)", "W Warszawie (Polska)", "W Londynie (Wielka Brytania)"],
-            correct: 1
-        },
-        {
-            question: "Jaki jest główny cel Światowej Organizacji Handlu (WTO)?",
-            options: ["Wysyłanie misji wojskowych", "Walka z pandemią", "Liberalizacja handlu międzynarodowego i obniżanie ceł", "Ochrona gatunków zagrożonych", "Podbój kosmosu"],
-            correct: 2
-        },
-        {
-            question: "Kto jest tzw. „aktorem pozapaństwowym” w stosunkach międzynarodowych?",
-            options: ["Tylko prezydenci mocarstw", "Wyłącznie rządy państw należących do ONZ", "Sądy krajowe", "Organizacje terrorystyczne, korporacje i organizacje pozarządowe (NGO)", "Armie narodowe"],
-            correct: 3
-        },
-        {
-            question: "Czym zajmuje się OBWE (Organizacja Bezpieczeństwa i Współpracy w Europie)?",
-            options: ["Ustalaniem stóp procentowych w bankach", "Zapobieganiem konfliktom i monitorowaniem wyborów", "Organizacją mistrzostw w piłce nożnej", "Produkcją szczepionek", "Handlem ropą naftową"],
-            correct: 1
-        },
-        {
-            question: "Kto jest obecnym Sekretarzem Generalnym NATO?",
-            options: ["Joe Biden", "Jens Stonberg", "Mark Rutte", "Olaf Scholz", "Emmanuel Macron"],
-            correct: 2
-        },
-        {
-            question: "Kto reprezentuje Polskę na szczytach Rady Europejskiej (szefów rządów państw UE)?",
-            options: ["Marszałek Sejmu", "Minister Zdrowia", "Ambasador w USA", "Prezes NBP", "Premier RP"],
-            correct: 4
-        },
-        {
-            question: "Jaki Polak pełnił funkcję Przewodniczącego Rady Europejskiej w latach 2014–2019?",
-            options: ["Donald Tusk", "Lech Wałęsa", "Aleksander Kwaśniewski", "Andrzej Duda", "Jerzy Buzek"],
-            correct: 0
-        },
-        {
-            question: "Kto jest obecnym Stałym Przedstawicielem Polski przy ONZ w Nowym Jorku?",
-            options: ["Radosław Sikorski", "Szymon Hołownia", "Krzysztof Szczerski", "Rafał Trzaskowski", "Jarosław Kaczyński"],
-            correct: 2
-        },
-        {
-            question: "Jak nazywa się instytucja sądowa Rady Europy, do której obywatele mogą skarżyć swoje państwo?",
-            options: ["Międzynarodowy Trybunał Karny", "Sąd Najwyższy USA", "Trybunał Stanu", "Europejski Trybunał Praw Człowieka (ETPC)", "Sąd Rejonowy w Strasburgu"],
-            correct: 3
-        },
-        {
-            question: "Kto jest obecną Przewodniczącą Parlamentu Europejskiego ?",
-            options: ["Ursula von der Leyen", "Roberta Metsola", "Angela Merkel", "Beata Szydło", "Christine Lagarde"],
-            correct: 1
-        },
-        {
-            question: "Kto jest obecnym Przewodniczącym Rady Europejskiej?",
-            options: ["Antonino Costa", "Boris Johnson", "Viktor Orban", "Donald Trump", "Jens Stoltenberg"],
-            correct: 0
-        },
-        {
-            question: "Który z poniższych podmiotów jest przykładem międzynarodowej korporacji (aktora pozapaństwowego)?",
-            options: ["Rząd Francji", "ONZ", "NATO", "Miasto Warszawa", "Google / Alphabet"],
-            correct: 4
-        },
-        {
-            question: "Czym jest Amnesty International?",
-            options: ["Agencją rządową USA", "Firmą produkującą broń", "Międzynarodową organizacją pozarządową (NGO) walczącą o prawa człowieka", "Zespołem muzycznym", "Organizacją handlową"],
-            correct: 2
-        },
-        {
-            question: "Polskim komisarzem w Komisji Europejskiej jest:",
-            options: ["Radosław Sikorski", "Piotr Serafin", "Elżbieta Bieńkowska", "Danuta Hübner", "Leszek Balcerowicz"],
-            correct: 1
-        },
-        {
-            question: "Ile państw posiada prawo weta w Radzie Bezpieczeństwa ONZ (stali członkowie)?",
-            options: ["10", "27 (wszystkie państwa UE)", "1 (tylko USA)", "5 (USA, Rosja, Chiny, Francja, Wlk. Brytania)", "0 (decyduje większość)"],
-            correct: 3
-        },
-        {
-            question: "Czym zajmuje się UNESCO?",
-            options: ["Kulturą, sztuką, nauką i ochroną dziedzictwa światowego", "Wymianą walut", "Organizacją armii europejskiej", "Ochroną granic morskich", "Produkcją żywności"],
-            correct: 0
-        },
-        {
-            question: "Jaki jest główny cel UNICEF?",
-            options: ["Wspieranie banków", "Budowa autostrad", "Pomoc dzieciom na świecie (żywność, edukacja, zdrowie)", "Szkolenie żołnierzy", "Badanie kosmosu"],
-            correct: 2
-        },
-        {
-            question: "Kto jest Zwierzchnikiem Sił Zbrojnych RP, który reprezentuje Polskę na szczytach NATO?",
-            options: ["Minister Obrony Narodowej", "Marszałek Senatu", "Prymas Polski", "Prezes Telewizji Polskiej", "Prezydent Rzeczypospolitej Polskiej"],
-            correct: 4
-        },
-        {
-            question: "Czym różni się Rada Europy od Rady Europejskiej?",
-            options: ["To ta sama organizacja", "Rada Europy to osobna organizacja (prawa człowieka), a Rada Europejska to instytucja UE", "Rada Europy zajmuje się sportem, a Rada Europejska rolnictwem", "Rada Europy jest w USA, a Rada Europejska w Azji", "Rada Europy to nazwa banku"],
-            correct: 1
-        },
-        {
-            question: "Ilu posłów do Parlamentu Europejskiego (europosłów) wybierano w Polsce w 2024 roku?",
-            options: ["100", "460", "53", "15", "1"],
-            correct: 2
-        },
-        {
-            question: "Jak nazywa się grupa 7 najbardziej wpływowych gospodarczo państw zachodnich?",
-            options: ["G7", "G20", "Grupa Wyszehradzka", "Trójkąt Weimarski", "BRICS"],
-            correct: 0
-        },
-        {
-            question: "Greenpeace to przykład:",
-            options: ["Partii politycznej w Polsce", "Organizacji terrorystycznej", "Agencji rządowej ONZ", "Międzynarodowej organizacji pozarządowej (ekologicznej)", "Firmy wydobywczej"],
-            correct: 3
-        },
-        {
-            question: "W którym mieście znajduje się siedziba Międzynarodowego Trybunału Sprawiedliwości (główny organ sądowy ONZ)?",
-            options: ["W Paryżu (Francja)", "W Hadze (Holandia)", "W Berlinie (Niemcy)", "W Rzymie (Włochy)", "W Madrycie (Hiszpania)"],
-            correct: 1
-        },
-        {
-            question: "Które z państw jest stałym członkiem Rady Bezpieczeństwa ONZ i posiada broń atomową?",
-            options: ["Polska", "Niemcy", "Francja", "Japonia", "Brazylia"],
-            correct: 2
-        },
-        {
-            question: "Co oznacza termin „Brexit”?",
-            options: ["Wyjście Wielkiej Brytanii z Unii Europejskiej", "Wejście Brazylii do NATO", "Rozpad Związku Radzieckiego", "Utworzenie nowej waluty w Belgii", "Nazwa brytyjskiego święta"],
-            correct: 0
-        },
-        {
-            question: "Kto stoi na czele dyplomacji Unii Europejskiej (Szef unijnej dyplomacji)?",
-            options: ["Król Belgii", "Sekretarz Generalny ONZ", "Prezydent Francji", "Premier Polski", "Wysoki przedstawiciel Unii do spraw zagranicznych"],
-            correct: 4
-        },
-        {
-            question: "Al-Kaida i ISIS to przykłady jakiego rodzaju aktorów w polityce?",
-            options: ["Legalnych partii politycznych", "Międzynarodowych organizacji terrorystycznych (aktorzy pozapaństwowi)", "Organizacji charytatywnych", "Agencji ONZ", "Sojuszy wojskowych"],
-            correct: 1
-        },
-        {
-            question: "Co to jest 'Trójkąt Weimarski'?",
-            options: ["Nazwa pizzy", "Sojusz Polski, USA i Wielkiej Brytanii", "Trzy najważniejsze miasta w Europie", "Grupa współpracy Polski, Niemiec i Francji", "Nazwa góry w Niemczech"],
-            correct: 3
-        },
-        {
-            question: "Kto wybiera Przewodniczącego Komisji Europejskiej?",
-            options: ["Prezydent USA", "Obywatele w bezpośrednim głosowaniu internetowym", "Parlament Europejski na wniosek Rady Europejskiej", "Królowa Danii", "Losowanie totolotka"],
-            correct: 2
-        },
-        {
-            question: "Kto jest obecnym Stałym Przedstawicielem Polski przy NATO (stan na 2024)?",
-            options: ["Jacek Najder", "Tomasz Szatkowski", "Radosław Sikorski", "Marek Magierowski", "Adam Szlapka"],
-            correct: 0
-        },
-        {
-            question: "Kto pełni funkcję Polskiego Przedstawiciela Wojskowego przy Komitetach Wojskowych NATO i UE?",
-            options: ["Generał Rajmund Andrzejczak", "Generał Wiesław Kukuła", "Generał Waldemar Skrzypczak", "Generał broni Sławomir Wojciechowski", "Generał Roman Polko"],
-            correct: 3
-        },
-        {
-            question: "W jakim mieście odbyła się konferencja założycielska ONZ (podpisanie Karty Narodów Zjednoczonych w 1945)?",
-            options: ["Nowy Jork (USA)", "Waszyngton (USA)", "San Francisco (USA)", "Genewa (Szwajcaria)", "Londyn (Wielka Brytania)"],
-            correct: 2
-        },
-        {
-            question: "Unia Europejska została formalnie założona 1 listopada 1993 roku na skutek wejścia w życie:",
-            options: ["Traktatu Rzymskiego", "Traktatu z Maastricht", "Traktatu Lizbońskiego", "Traktatu Paryskiego", "Deklaracji Niepodległości"],
-            correct: 1
-        },
-        {
-            question: "Kto jest obecnym Stałym Przedstawicielem Polski przy Narodach Zjednoczonych (ONZ) w Nowym Jorku?",
-            options: ["Jacek Najder", "Witold Waszczykowski", "Zbigniew Rau", "Rafał Trzaskowski", "Krzysztof Szczerski"],
-            correct: 4
-        },
-        {
-            question: "Jak nazywa się dokument podpisany w 1945 roku, będący statutem ONZ?",
-            options: ["Karta Narodów Zjednoczonych", "Konstytucja Świata", "Deklaracja Praw Człowieka", "Traktat Wersalski", "Umowa Paryska"],
-            correct: 0
-        },
-        {
-            question: "Który z polskich generałów był Szefem Sztabu Generalnego WP w latach 2018-2023?",
-            options: ["Generał Sławomir Wojciechowski", "Generał Czesław Kiszczak", "Generał Rajmund Andrzejczak", "Generał Wojciech Jaruzelski", "Generał Stanisław Koziej"],
-            correct: 2
-        },
-        {
-            question: "Co było bezpośrednim skutkiem Traktatu z Maastricht?",
-            options: ["Zakończenie II wojny światowej", "Powstanie NATO", "Upadek Muru Berlińskiego", "Powstanie Unii Europejskiej z Europejskiej Wspólnoty Gospodarczej", "Wstąpienie Polski do ONZ"],
-            correct: 3
-        },
-        {
-            question: "Kto reprezentuje Polskę w Komitecie Wojskowym NATO (najwyższy organ wojskowy sojuszu)?",
-            options: ["Minister Finansów", "Polski Przedstawiciel Wojskowy (obecnie gen. Sławomir Wojciechowski)", "Ambasador w Berlinie", "Prezydent Warszawy", "Marszałek Sejmu"],
-            correct: 1
-        },
-        {
-            question: "Gdzie znajduje się obecna siedziba główna (sekretariat) ONZ (choć założono ją w San Francisco)?",
-            options: ["W San Francisco", "W Los Angeles", "W Chicago", "W Miami", "W Nowym Jorku"],
-            correct: 4
+        // Funkcja do mieszania tablicy (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
         }
-    ];
 
-    let currentQuestions = [];
-    let currentQuestionIndex = 0;
-    let score = 0;
-
-    const startScreen = document.getElementById('start-screen');
-    const quizScreen = document.getElementById('quiz-screen');
-    const resultScreen = document.getElementById('result-screen');
-    const questionText = document.getElementById('question-text');
-    const optionsContainer = document.getElementById('options-container');
-    const questionCounter = document.getElementById('question-counter');
-    const nextBtn = document.getElementById('next-btn');
-    const progressFill = document.getElementById('progress-fill');
-    const finalScore = document.getElementById('final-score');
-    const resultMessage = document.getElementById('result-message');
-
-    // Funkcja tasująca tablicę (Fisher-Yates)
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    // Start quizu
-    function startQuiz(mode) {
-        // ZAWSZE tasujemy wszystkie pytania na początku
-        let shuffled = shuffleArray([...allQuestions]);
-
-        if (mode === 'one') {
-            currentQuestions = shuffled.slice(0, 1);
-        } else if (mode === 'ten') {
-            currentQuestions = shuffled.slice(0, 10);
-        } else {
-            // TUTAJ ZMIANA: Przypisujemy potasowaną tablicę, a nie oryginał
-            currentQuestions = shuffled;
+        // Funkcja do przygotowania pytania z pomieszanymi odpowiedziami
+        function prepareQuestion(question) {
+            const preparedQuestion = { ...question };
+            
+            // Tworzymy tablicę z indeksami
+            const indexMap = question.options.map((opt, idx) => idx);
+            
+            // Mieszamy indeksy
+            const shuffledIndexMap = shuffleArray(indexMap);
+            
+            // Tworzymy nową tablicę odpowiedzi w pomieszanej kolejności
+            preparedQuestion.options = shuffledIndexMap.map(idx => question.options[idx]);
+            
+            // Aktualizujemy poprawne odpowiedzi
+            if (question.multiple) {
+                // Dla pytań wielokrotnego wyboru
+                preparedQuestion.correct = question.correct.map(correctIdx => 
+                    shuffledIndexMap.indexOf(correctIdx)
+                );
+            } else {
+                // Dla pytań jednokrotnego wyboru
+                preparedQuestion.correct = shuffledIndexMap.indexOf(question.correct);
+            }
+            
+            return preparedQuestion;
         }
 
-        currentQuestionIndex = 0;
-        score = 0;
-        
-        startScreen.style.display = 'none';
-        resultScreen.style.display = 'none';
-        quizScreen.style.display = 'block';
-
-        loadQuestion();
-    }
-
-    function loadQuestion() {
-        const q = currentQuestions[currentQuestionIndex];
-        
-        nextBtn.style.display = 'none';
-        
-        if (currentQuestionIndex === currentQuestions.length - 1) {
-            nextBtn.textContent = "Zakończ i pokaż wynik 🏁";
-        } else {
-            nextBtn.textContent = "Następne pytanie ➜";
-        }
-
-        optionsContainer.innerHTML = '';
-        questionText.textContent = q.question;
-        
-        questionCounter.textContent = `Pytanie ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
-        const progress = ((currentQuestionIndex) / currentQuestions.length) * 100;
-        progressFill.style.width = `${progress}%`;
-
-        q.options.forEach((opt, index) => {
-            const btn = document.createElement('button');
-            btn.classList.add('option-btn');
-            btn.textContent = opt;
-            btn.onclick = () => checkAnswer(index, btn);
-            optionsContainer.appendChild(btn);
-        });
-    }
-
-    // Sprawdzanie odpowiedzi
-    function checkAnswer(selectedIndex, btnElement) {
-        const q = currentQuestions[currentQuestionIndex];
-        const buttons = optionsContainer.querySelectorAll('.option-btn');
-
-        // Zablokuj wszystkie przyciski
-        buttons.forEach(btn => btn.disabled = true);
-
-        if (selectedIndex === q.correct) {
-            // Dobra odpowiedź
-            btnElement.classList.add('correct');
-            score++;
-        } else {
-            // Zła odpowiedź
-            btnElement.classList.add('wrong');
-            // Pokaż poprawną
-            buttons[q.correct].classList.add('correct');
-        }
-
-        nextBtn.style.display = 'block';
-        
-        const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
-        progressFill.style.width = `${progress}%`;
-    }
-
-    function nextQuestion() {
-        currentQuestionIndex++;
-        
-        if (currentQuestionIndex < currentQuestions.length) {
+        // Inicjalizacja quizu
+        function initQuiz() {
+            // Mieszamy pytania
+            const shuffledQuestions = shuffleArray(quizDataOriginal);
+            
+            // Przygotowujemy każde pytanie (mieszamy odpowiedzi)
+            quizData = shuffledQuestions.map(q => prepareQuestion(q));
+            
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('total').textContent = quizData.length;
+            
             loadQuestion();
-        } else {
-            showResults();
         }
-    }
 
+        function loadQuestion() {
+            const container = document.getElementById('quizContainer');
+            const question = quizData[currentQuestion];
+            
+            let optionsHTML = '';
+            question.options.forEach((option, index) => {
+                optionsHTML += `
+                    <li class="option" onclick="selectAnswer(${index})">
+                        <input type="${question.multiple ? 'checkbox' : 'radio'}" 
+                               name="answer" 
+                               value="${index}" 
+                               id="option${index}">
+                        <label for="option${index}">${option}</label>
+                    </li>
+                `;
+            });
 
-    function showResults() {
-        quizScreen.style.display = 'none';
-        resultScreen.style.display = 'block';
-        
-        finalScore.textContent = `${score} / ${currentQuestions.length}`;
-        
-        const percentage = (score / currentQuestions.length) * 100;
-        
+            container.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Pytanie ${currentQuestion + 1} z ${quizData.length}</div>
+                    <div class="question">${question.question}</div>
+                    <ul class="options">
+                        ${optionsHTML}
+                    </ul>
+                    <div class="feedback" id="feedback"></div>
+                    <div class="buttons">
+                        <button class="btn-next" onclick="checkAnswer()">Sprawdź odpowiedź</button>
+                    </div>
+                </div>
+            `;
 
-    }
+            updateProgress();
+        }
 
-</script>
+        function selectAnswer(index) {
+            const question = quizData[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            
+            if (question.multiple) {
+                options[index].classList.toggle('selected');
+            } else {
+                options.forEach(opt => opt.classList.remove('selected'));
+                options[index].classList.add('selected');
+            }
+        }
 
+        function checkAnswer() {
+            const question = quizData[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+            
+            let selectedAnswers = [];
+            options.forEach((option, index) => {
+                if (option.classList.contains('selected')) {
+                    selectedAnswers.push(index);
+                }
+            });
+
+            if (selectedAnswers.length === 0) {
+                alert('Proszę wybrać odpowiedź!');
+                return;
+            }
+
+            let isCorrect = false;
+            
+            if (question.multiple) {
+                isCorrect = JSON.stringify(selectedAnswers.sort()) === JSON.stringify(question.correct.sort());
+            } else {
+                isCorrect = selectedAnswers[0] === question.correct;
+            }
+
+            options.forEach((option, index) => {
+                option.classList.add('disabled');
+                option.onclick = null;
+                
+                if (question.multiple) {
+                    if (question.correct.includes(index)) {
+                        option.classList.add('correct');
+                    }
+                    if (selectedAnswers.includes(index) && !question.correct.includes(index)) {
+                        option.classList.add('incorrect');
+                    }
+                } else {
+                    if (index === question.correct) {
+                        option.classList.add('correct');
+                    }
+                    if (selectedAnswers.includes(index) && index !== question.correct) {
+                        option.classList.add('incorrect');
+                    }
+                }
+            });
+
+            if (isCorrect) {
+                score++;
+                feedback.className = 'feedback show correct';
+                feedback.innerHTML = `
+                    <strong>✓ Poprawna odpowiedź!</strong>
+                    <div class="explanation">${question.explanation}</div>
+                `;
+            } else {
+                feedback.className = 'feedback show incorrect';
+                feedback.innerHTML = `
+                    <strong>✗ Niepoprawna odpowiedź</strong>
+                    <div class="explanation">${question.explanation}</div>
+                `;
+            }
+
+            document.getElementById('score').textContent = score;
+
+            const buttonsDiv = document.querySelector('.buttons');
+            buttonsDiv.innerHTML = `
+                <button class="btn-next" onclick="nextQuestion()">
+                    ${currentQuestion < quizData.length - 1 ? 'Następne pytanie →' : 'Zobacz wynik'}
+                </button>
+            `;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion) / quizData.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showFinalScore() {
+            const percentage = (score / quizData.length * 100).toFixed(1);
+            const container = document.getElementById('quizContainer');
+            
+            let message = '';
+            let emoji = '';
+            
+            if (percentage >= 90) {
+                message = 'Doskonały wynik!';
+                emoji = '🏆';
+            } else if (percentage >= 70) {
+                message = 'Bardzo dobry wynik!';
+                emoji = '🎉';
+            } else if (percentage >= 50) {
+                message = 'Dobra robota!';
+                emoji = '👍';
+            } else {
+                message = 'Spróbuj ponownie!';
+                emoji = '📚';
+            }
+
+            container.innerHTML = `
+                <div class="final-score">
+                    <h2>${emoji} ${message}</h2>
+                    <p>Twój wynik: <strong>${score}</strong> na <strong>${quizData.length}</strong></p>
+                    <p>Procent poprawnych odpowiedzi: <strong>${percentage}%</strong></p>
+                    <button class="btn-next restart-btn" onclick="restartQuiz()">
+                        🔄 Rozpocznij quiz od nowa
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('progressBar').style.width = '100%';
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        // Start quiz
+        window.onload = function() {
+            initQuiz();
+        };
+    </script>
 </body>
 </html>
